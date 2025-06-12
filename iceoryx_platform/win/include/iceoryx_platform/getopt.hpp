@@ -17,14 +17,8 @@
 #ifndef IOX_HOOFS_WIN_PLATFORM_GETOPT_HPP
 #define IOX_HOOFS_WIN_PLATFORM_GETOPT_HPP
 
-#define no_argument 0
-#define required_argument 1
-
-#define optarg "fuu"
-
-extern int optind;
-extern int opterr;
-extern int optout;
+#include <string>
+#include <vector>
 
 struct option
 {
@@ -34,6 +28,15 @@ struct option
     int val;
 };
 
-int getopt_long(int, char* const[], const char*, const struct option*, int*);
+constexpr int no_argument = 0;
+constexpr int required_argument = 1;
+constexpr int optional_argument = 2;
+
+extern char* optarg;
+extern int optind;
+extern int optopt;
+
+int getopt_long(int argc, char* const argv[], const char* optstring,
+                const struct option* longopts, int* longindex);
 
 #endif // IOX_HOOFS_WIN_PLATFORM_GETOPT_HPP
