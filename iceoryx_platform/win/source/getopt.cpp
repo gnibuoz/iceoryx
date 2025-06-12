@@ -19,54 +19,71 @@
 #include "iceoryx_platform/logging.hpp"
 #include "iceoryx_platform/windows.hpp"
 
+#include <cstdio>
 #include <cstring>
 #include <iostream>
-#include <cstdio>
 
 char* optarg = nullptr;
 int optind = 1;
 int optopt = 0;
 
-int getopt_long(int argc, char* const argv[], const char* optstring,
-                const struct option* longopts, int* longindex)
+int getopt_long(int argc, char* const argv[], const char* optstring, const struct option* longopts, int* longindex)
 {
-    if (optind >= argc) {
+    if (optind >= argc)
+    {
         return -1;
     }
 
     const char* current = argv[optind];
 
     // long option
-    if (strncmp(current, "--", 2) == 0) {
+    if (strncmp(current, "--", 2) == 0)
+    {
         const char* name = current + 2;
         const char* value = nullptr;
         std::string optName;
-        if (const char* eq = strchr(name, '=')) {
+        if (const char* eq = strchr(name, '='))
+        {
             optName = std::string(name, eq - name);
             value = eq + 1;
-        } else {
+        }
+        else
+        {
             optName = name;
         }
 
-        for (int i = 0; longopts[i].name != nullptr; ++i) {
-            if (optName == longopts[i].name) {
-                if (longindex) {
+        for (int i = 0; longopts[i].name != nullptr; ++i)
+        {
+            if (optName == longopts[i].name)
+            {
+                if (longindex)
+                {
                     *longindex = i;
                 }
 
-                if (longopts[i].has_arg == required_argument) {
-                    if (value) {
+                if (longopts[i].has_arg == required_argument)
+                {
+                    if (value)
+                    {
                         optarg = const_cast<char*>(value);
-                    } else if (optind + 1 < argc) {
+                    }
+                    else if (optind + 1 < argc)
+                    {
                         optind++;
                         optarg = argv[optind];
-                    } else {
+                    }
+                    else
+                    {
                         std::cerr << "Missing argument for option --" << optName << std::endl;
                         return '?';
                     }
-                } else if (longopts[i].has_arg == optional_argument) {
+                }
+                else if (longopts[i].has_arg == optional_argument)
+                {
                     optarg = value ? const_cast<char*>(value) : nullptr;
-                } else {
+                }
+                else
+                {
                     optarg = nullptr;
                 }
 
@@ -81,29 +98,39 @@ int getopt_long(int argc, char* const argv[], const char* optstring,
     }
 
     // short option
-    if (current[0] == '-' && current[1] != '\0') {
+    if (current[0] == '-' && current[1] != '\0')
+    {
         char opt = current[1];
         const char* optchar = strchr(optstring, opt);
-        if (!optchar) {
+        if (!optchar)
+        {
             optopt = opt;
             std::cerr << "Unknown option -" << opt << std::endl;
             optind++;
             return '?';
         }
 
-        if (*(optchar + 1) == ':') {
+        if (*(optchar + 1) == ':')
+        {
             // option requires argument
-            if (current[2] != '\0') {
+            if (current[2] != '\0')
+            {
                 optarg = const_cast<char*>(current + 2);
-            } else if (optind + 1 < argc) {
+            }
+            else if (optind + 1 < argc)
+            {
                 optind++;
                 optarg = argv[optind];
-            } else {
+            }
+            else
+            {
                 std::cerr << "Missing argument for option -" << opt << std::endl;
                 optind++;
                 return '?';
             }
-        } else {
+        }
+        else
+        {
             optarg = nullptr;
         }
 
